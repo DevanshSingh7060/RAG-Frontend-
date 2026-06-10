@@ -1,0 +1,1122 @@
+@import url('https://fonts.cdnfonts.com/css/geist-font');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap');
+
+:root {
+  /* Color System - Warm Dark v3.0 */
+  --bg-void: #070709;
+  --bg-surface: #0E0E12;
+  --bg-elevated: #16161C;
+  --bg-hover: #1A1A22;
+
+  /* Borders */
+  --border-faint: #181820;
+  --border-subtle: #222230;
+  --border-active: #32324A;
+
+  /* Text Stack */
+  --text-primary: #ECECF1;
+  --text-secondary: #8888A0;
+  --text-muted: #44444F;
+
+  /* Typography Fonts */
+  --font-primary: 'Geist', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Easing Curves */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Border Radii */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 28px;
+  --radius-full: 999px;
+
+  --t-micro: 100ms var(--ease-spring);
+  --t-fast: 200ms var(--ease-spring);
+  --t-normal: 320ms var(--ease-spring);
+  --t-slow: 500ms var(--ease-spring);
+  
+  --bg-accent-bg: rgba(129, 140, 248, 0.08);
+}
+
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography Scales */
+.display-300 {
+  font-family: var(--font-primary);
+  font-size: 32px;
+  font-weight: 300;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+  .display-300 {
+    font-size: 26px;
+  }
+}
+
+.placeholder-300 {
+  font-family: var(--font-primary);
+  font-size: 28px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+.label-caps-500 {
+  font-family: var(--font-primary);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: +0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.body-ai-400 {
+  font-family: var(--font-primary);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.8;
+  color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .body-ai-400 {
+    line-height: 1.85;
+  }
+}
+
+.body-user-400 {
+  font-family: var(--font-primary);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.metadata-400 {
+  font-family: var(--font-primary);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.chip-mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* -------------------------------------------------------------
+   BACKGROUND GRADIENT LAYERS (v3.0 UPGRADE)
+   ------------------------------------------------------------- */
+.aurora-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-void);
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.aurora-container.switching-active {
+  filter: brightness(1.35) saturate(1.2);
+  transition: filter 300ms var(--ease-standard);
+}
+
+.aurora-container.chat-mode .aurora-layer-2,
+.aurora-container.chat-mode .aurora-layer-3 {
+  opacity: 0;
+}
+
+.chat-aurora-overlay {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  right: -10%;
+  bottom: -10%;
+  background: 
+    radial-gradient(circle at 30% 30%, rgba(129, 140, 248, 0.05) 0%, transparent 65%),
+    radial-gradient(circle at 70% 65%, rgba(139, 92, 246, 0.04) 0%, transparent 60%),
+    radial-gradient(circle at 40% 80%, rgba(20, 184, 166, 0.03) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 1000ms var(--ease-standard);
+  animation: chatAuroraBreath 14s ease-in-out infinite;
+}
+
+.chat-aurora-active {
+  opacity: 1;
+}
+
+@keyframes chatAuroraBreath {
+  0% {
+    transform: scale(1.0) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.06) translate3d(3%, -3%, 0);
+  }
+  100% {
+    transform: scale(1.0) translate3d(0, 0, 0);
+  }
+}
+
+
+/* Layer 2 - The deep aurora (primary bloom) */
+.aurora-layer-2 {
+  position: absolute;
+  bottom: -30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150%;
+  height: 80%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse 100% 60% at 50% 105%,
+    rgba(79, 70, 229, 0.05) 0%,
+    rgba(99, 102, 241, 0.04) 20%,
+    rgba(139, 92, 246, 0.02) 40%,
+    transparent 80%
+  );
+  animation: auroraBreath 9s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+/* Layer 3 - The teal counter-bloom (right-bottom offset) */
+.aurora-layer-3 {
+  position: absolute;
+  bottom: -20%;
+  right: -10%;
+  width: 100%;
+  height: 60%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse 50% 35% at 75% 95%,
+    rgba(20, 184, 166, 0.04) 0%,
+    rgba(6, 182, 212, 0.02) 35%,
+    transparent 65%
+  );
+  animation: tealDrift 13s ease-in-out infinite;
+  transform-origin: right bottom;
+}
+
+/* Layer 2 animation (slow breathe) */
+@keyframes auroraBreath {
+  0%   { transform: translateX(-50%) scale(1.0) translateY(0px); opacity: 0.9; }
+  33%  { transform: translateX(-50%) scale(1.04) translateY(-8px); opacity: 1.0; }
+  66%  { transform: translateX(-50%) scale(0.98) translateY(4px); opacity: 0.85; }
+  100% { transform: translateX(-50%) scale(1.0) translateY(0px); opacity: 0.9; }
+}
+
+/* Layer 3 animation (offset phase, slower) */
+@keyframes tealDrift {
+  0%   { transform: translateX(0px) translateY(0px) scale(1.0); }
+  50%  { transform: translateX(-20px) translateY(-12px) scale(1.08); }
+  100% { transform: translateX(0px) translateY(0px) scale(1.0); }
+}
+
+/* Layer 5 - Star halo (breathing backdrop emission) */
+.star-halo {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(
+    circle at center,
+    rgba(129, 140, 248, 0.35) 0%,
+    rgba(52, 211, 153, 0.15) 40%,
+    transparent 70%
+  );
+  filter: blur(16px);
+  pointer-events: none;
+  z-index: 1;
+  transform-origin: center;
+}
+
+.star-halo-idle {
+  animation: haloBreath 4s ease-in-out infinite;
+}
+
+.star-halo-thinking {
+  animation: haloBreath 2s ease-in-out infinite;
+  transform: scale(1.5) !important;
+}
+
+@keyframes haloBreath {
+  0%   { opacity: 0.6; transform: scale(1.0); }
+  50%  { opacity: 1.0; transform: scale(1.2); }
+  100% { opacity: 0.6; transform: scale(1.0); }
+}
+
+/* Internal star gradient shift (no rotation) */
+@keyframes starGradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.star-grad-shift-slow {
+  animation: starGradientShift 6s ease-in-out infinite;
+}
+
+.star-grad-shift-fast {
+  animation: starGradientShift 2s ease-in-out infinite;
+}
+
+/* Star Rotation, Breathing, and Welcome Keyframes (v2.4 Upgrade) */
+@keyframes slowRotation {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes starBreathMicro {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* Landing star: microscopic scale breathing, NO rotation v2.4 */
+.star-idle-anim {
+  animation: starBreathMicro 6s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes starPulseThinking {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+.star-pulse-rotation {
+  animation: starPulseThinking 2s ease-in-out infinite, slowRotation 12s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes welcomeRotation22 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes scaleUpSpring {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  35% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+  50% {
+    transform: scale(1.0);
+  }
+  75% {
+    transform: scale(1.03); /* Subtle breathing hold */
+  }
+  100% {
+    transform: scale(1.0);
+  }
+}
+
+.star-welcome-scale {
+  animation: scaleUpSpring 2.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  transform-origin: center;
+}
+
+.star-welcome-rotate {
+  animation: welcomeRotation22 2.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  transform-origin: center;
+}
+
+/* Subsequent visits: 400ms glow pulse on landing star v2.3 */
+.subsequent-glow-pulse {
+  animation: glowPulse 400ms ease-out forwards;
+}
+
+@keyframes glowPulse {
+  0% {
+    filter: drop-shadow(0 0 0px transparent);
+    opacity: 0.8;
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(129, 140, 248, 0.6));
+    opacity: 1;
+  }
+  100% {
+    filter: drop-shadow(0 0 4px rgba(129, 140, 248, 0.25));
+    opacity: 1;
+  }
+}
+
+/* First token arrives: star fades in with a soft glow v2.3 */
+.fade-in-glow {
+  animation: fadeInGlow 400ms ease-out forwards;
+}
+
+@keyframes fadeInGlow {
+  from {
+    opacity: 0;
+    filter: drop-shadow(0 0 0px transparent);
+  }
+  to {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(129, 140, 248, 0.35));
+  }
+}
+
+@keyframes fadeInUpWelcome {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.welcome-text-anim {
+  animation: fadeInUpWelcome 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translate(0, 0);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translate(var(--x-drift, 20px), var(--y-drift, -20px));
+    opacity: 0.6;
+  }
+}
+
+.ambient-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: rgba(129, 140, 248, 0.6);
+  border-radius: 50%;
+  filter: blur(1px);
+  animation: particleFloat 6s ease-in-out infinite;
+}
+
+.settled-landing-fade-in {
+  animation: fadeIn 300ms ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* -------------------------------------------------------------
+   INPUT BAR PREMIUM DOUBLE GRADIENT BORDERS (v3.0 UPGRADE)
+   ------------------------------------------------------------- */
+.premium-border-input {
+  border: 1px solid transparent;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image: linear-gradient(var(--bg-surface), var(--bg-surface)),
+                    linear-gradient(135deg, rgba(129,140,248,0.2) 0%, rgba(52,211,153,0.1) 100%);
+  transition: all 350ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.premium-border-input-focus {
+  background-image: linear-gradient(var(--bg-surface), var(--bg-surface)),
+                    linear-gradient(135deg, rgba(129,140,248,0.5) 0%, rgba(52,211,153,0.3) 100%);
+  box-shadow: 0 0 0 1px rgba(129,140,248,0.5),
+              0 0 20px rgba(129,140,248,0.15),
+              0 0 40px rgba(129,140,248,0.08),
+              0 0 80px rgba(52,211,153,0.05);
+}
+
+/* Gradient borders for suggestion pills */
+.premium-border-pill {
+  border: 1px solid transparent;
+  background-image: linear-gradient(var(--bg-surface), var(--bg-surface)),
+                    linear-gradient(135deg, rgba(129,140,248,0.15) 0%, rgba(52,211,153,0.08) 100%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  transition: all 250ms var(--ease-spring);
+}
+
+.premium-border-pill:hover {
+  background-image: linear-gradient(var(--bg-surface), var(--bg-surface)),
+                    linear-gradient(135deg, rgba(129,140,248,0.35) 0%, rgba(52,211,153,0.2) 100%);
+  transform: scale(1.02) translateY(-1px);
+}
+
+/* Gradient Input placeholder text */
+.gradient-placeholder::placeholder {
+  background: linear-gradient(90deg, #888899 0%, #666677 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* -------------------------------------------------------------
+   MICRO-INTERACTIONS & MOTION (v3.0 UPGRADE)
+   ------------------------------------------------------------- */
+
+/* Apple Intelligence staggered dots bounce (upgraded translateY) */
+@keyframes dotBounceUpgraded {
+  0%, 100% {
+    transform: translateY(0px);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(-6px);
+    opacity: 1.0;
+  }
+}
+
+.dot-bounce-v3 {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #818CF8, #38BDF8, #34D399, #A78BFA);
+  animation: dotBounceUpgraded 1.2s ease-in-out infinite;
+}
+
+.dot-bounce-1 {
+  animation-delay: 0ms;
+}
+.dot-bounce-2 {
+  animation-delay: 150ms;
+}
+.dot-bounce-3 {
+  animation-delay: 300ms;
+}
+
+
+/* Heartbeat dot pulse scale & opacity */
+@keyframes heartbeatDot {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1.0;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+}
+
+.heartbeat-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #818CF8, #34D399);
+  box-shadow: 0 0 8px rgba(129, 140, 248, 0.4);
+  animation: heartbeatDot 2.5s ease-in-out infinite;
+  display: inline-block;
+}
+
+/* Cursor Blink */
+@keyframes cursorBlink {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.blinking-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 16px;
+  background: linear-gradient(to bottom, #818CF8, #34D399);
+  vertical-align: middle;
+  margin-left: 2px;
+  animation: cursorBlink 1s ease infinite;
+}
+
+/* User typewriter typing cursor overlay */
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 16px;
+  background-color: var(--text-secondary);
+  vertical-align: middle;
+  margin-left: 1px;
+}
+
+/* Custom Scrollbars */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: var(--radius-full);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--border-active);
+}
+
+/* Button & interactive states */
+button, input, textarea {
+  font-family: inherit;
+  background: none;
+  border: none;
+  outline: none;
+}
+button {
+  cursor: pointer;
+}
+input {
+  outline: none;
+}
+textarea {
+  outline: none;
+}
+
+/* Safe areas for iOS mobile drawer compatibility */
+.safe-bottom {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
+}
+
+.safe-bottom-nav {
+  height: calc(56px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* AI Response Block v2.5 */
+.ai-response-block {
+  position: relative;
+  padding-left: 20px;
+  z-index: 1;
+  animation: responseBlockEntrance 800ms var(--ease-expo-out) forwards;
+}
+
+.ai-response-block::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  background: linear-gradient(to bottom, #818CF8, #34D399);
+  border-radius: 99px;
+  opacity: 0;
+  z-index: 2;
+  animation: temporaryLeftAccent 3s var(--ease-expo-out) forwards;
+}
+
+.ai-response-block::after {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(129, 140, 248, 0.08) 0%,
+    rgba(52, 211, 153, 0.04) 50%,
+    transparent 85%
+  );
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  filter: blur(24px);
+  animation: responseBloom 3s var(--ease-standard) forwards;
+}
+
+.word-reveal {
+  display: inline-block;
+  opacity: 0;
+  animation: wordReveal 400ms var(--ease-expo-out) forwards;
+}
+
+@keyframes responseBlockEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes temporaryLeftAccent {
+  0% {
+    opacity: 1;
+    filter: drop-shadow(0 0 4px rgba(129, 140, 248, 0.5));
+  }
+  15% {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(129, 140, 248, 0.6));
+  }
+  100% {
+    opacity: 0.02;
+    filter: drop-shadow(0 0 0px transparent);
+  }
+}
+
+@keyframes responseBloom {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1.0);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.03);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes wordReveal {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Gemini Bottom Breathing Gradient v2.9 */
+.bottom-breathing-gradient {
+  position: fixed;
+  left: 0;
+  width: 100vw;
+  height: 42vh;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 85% 85% at 50% 100%,
+    rgba(56, 189, 248, 0.06) 0%,   /* Faint Teal (6%) */
+    rgba(139, 92, 246, 0.04) 30%,  /* Faint Violet (4%) */
+    rgba(129, 140, 248, 0.03) 60%,  /* Faint Indigo (3%) */
+    transparent 100%
+  );
+  filter: blur(80px); /* Softened with larger blur */
+  animation: bottomBreathingGlow 9s ease-in-out infinite;
+  transform-origin: center bottom;
+  transition: bottom 500ms var(--ease-spring), opacity 1000ms var(--ease-standard);
+}
+
+@media (max-width: 768px) {
+  .bottom-breathing-gradient {
+    height: 46vh;
+    background: radial-gradient(
+      ellipse 100% 85% at 50% 100%,
+      rgba(56, 189, 248, 0.06) 0%,
+      rgba(139, 92, 246, 0.04) 35%,
+      rgba(129, 140, 248, 0.03) 65%,
+      transparent 100%
+    );
+    filter: blur(60px);
+  }
+}
+
+@keyframes bottomBreathingGlow {
+  0% {
+    opacity: 0.5;
+    transform: translateY(10px) scaleY(0.92);
+  }
+  50% {
+    opacity: 1.0;
+    transform: translateY(-10px) scaleY(1.08);
+  }
+  100% {
+    opacity: 0.5;
+    transform: translateY(10px) scaleY(0.92);
+  }
+}
+
+/* Apple Intelligence Full-Screen Activation Glow v2.9.4 */
+.apple-border-tracer-container {
+  position: fixed;
+  top: 3px;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 1;
+  transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tracer-path {
+  stroke-width: 2px;
+  /* Hardware-accelerated CSS drop-shadow filters for 60fps rendering */
+  filter: drop-shadow(0 0 4px rgba(129, 140, 248, 0.65)) 
+          drop-shadow(0 0 10px rgba(32, 184, 166, 0.5));
+  stroke-dasharray: 130 200; /* Safe buffer to prevent line wrapping/duplication on overshoot */
+  stroke-dashoffset: 130;
+  stroke-linecap: round;
+  transform: translate3d(0, 0, 0);
+  will-change: stroke-dashoffset, stroke-width, filter;
+  animation: 
+    borderTraceAnim 2.0s cubic-bezier(0.19, 1.1, 0.2, 1) forwards,
+    borderPulseDuringTrace 0.6s ease-in-out infinite alternate;
+  transition: stroke-width 300ms var(--ease-spring), filter 300ms var(--ease-spring);
+}
+
+/* When full glow is active, transform into a thick glow and pulse */
+.full-glow-active .tracer-path {
+  stroke-width: 5px;
+  filter: drop-shadow(0 0 6px rgba(129, 140, 248, 0.85))
+          drop-shadow(0 0 16px rgba(32, 184, 166, 0.7))
+          drop-shadow(0 0 32px rgba(16, 185, 129, 0.45));
+  animation: borderPulseAnim 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes borderTraceAnim {
+  0% {
+    stroke-dashoffset: 130;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes borderPulseDuringTrace {
+  0% {
+    stroke-width: 1.8px;
+    opacity: 0.7;
+  }
+  100% {
+    stroke-width: 3.2px;
+    opacity: 1.0;
+  }
+}
+
+@keyframes borderPulseAnim {
+  0% {
+    opacity: 0.8;
+    transform: scale(1.0) translate3d(0, 0, 0);
+  }
+  100% {
+    opacity: 1.0;
+    transform: scale(0.997) translate3d(0, 0, 0);
+  }
+}
+
+/* Strong radial bloom rising from center or model pill position */
+.apple-intelligence-bloom {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.6) translate3d(0, 0, 0);
+  width: 90vw;
+  height: 90vh;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(129, 140, 248, 0.25) 0%,   /* Indigo */
+    rgba(32, 184, 166, 0.15) 45%,   /* Teal */
+    rgba(16, 185, 129, 0.06) 75%,   /* Emerald */
+    transparent 100%
+  );
+  opacity: 0;
+  filter: blur(50px);
+  will-change: opacity, transform;
+  transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* When active, scale up and fade in */
+.bloom-active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.1) translate3d(0, 0, 0);
+  animation: bloomBreatheSubtle 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes bloomBreatheSubtle {
+  0% {
+    transform: translate(-50%, -50%) scale(1.05) translate3d(0, 0, 0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.15) translate3d(0, 0, 0);
+    opacity: 1.0;
+  }
+}
+
+/* Model Switch Dropdown item active highlight */
+.model-row-active {
+  box-shadow: 0 0 12px rgba(129, 140, 248, 0.15), inset 0 0 8px rgba(129, 140, 248, 0.05);
+  transform: scale(1.02);
+  transition: all 250ms var(--ease-spring) !important;
+}
+
+.tracer-fading {
+  opacity: 0 !important;
+  transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* -------------------------------------------------------------
+   LOCALIZED MODEL PILL TRANSITION ANIMATION (v3.3 UPGRADE)
+   ------------------------------------------------------------- */
+.model-pill-animating {
+  animation: pillGlowPulse 1000ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes pillGlowPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: none;
+    border-color: var(--border-subtle);
+  }
+  50% {
+    transform: scale(1.04);
+    box-shadow: 0 0 16px rgba(129, 140, 248, 0.25);
+    border-color: rgba(129, 140, 248, 0.45);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: none;
+    border-color: var(--border-subtle);
+  }
+}
+
+/* Momentary soft radial bloom appearing behind the pill coordinates */
+.model-pill-bloom {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(129, 140, 248, 0.22) 0%, transparent 70%);
+  filter: blur(12px);
+  pointer-events: none;
+  z-index: 0;
+  animation: pillBloomPulse 1000ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes pillBloomPulse {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  35% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.3); }
+}
+
+/* Thin circular ring fading outward */
+.model-pill-ring-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.model-pill-ring-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.model-pill-ring-circle {
+  fill: none;
+  stroke: url(#localRingGrad);
+  stroke-width: 1.2px;
+  transform-origin: center;
+  animation: localRingFade 1000ms cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes localRingFade {
+  0% {
+    transform: scale(0.4);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+}
+
+/* Skeleton Shimmer Loading effects */
+.skeleton-shimmer {
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-elevated) 50%, var(--bg-surface) 75%);
+  background-size: 200% 100%;
+  animation: skeletonShimmerAnim 1.6s infinite linear;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes skeletonShimmerAnim {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Flip clock style digit scale animation */
+.digit-flip-scale {
+  display: inline-block;
+  animation: digitFlipScaleAnim 400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes digitFlipScaleAnim {
+  0% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.22); filter: brightness(1.3); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* Feedback Toast Slide up */
+.feedback-toast-container {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  z-index: 10000;
+  font-size: 13px;
+  font-weight: 500;
+  animation: toastSlideUpAnim 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards,
+             toastSlideDownAnim 300ms cubic-bezier(0.16, 1, 0.3, 1) 1.7s forwards;
+  pointer-events: none;
+}
+
+@keyframes toastSlideUpAnim {
+  from { transform: translate(-50%, 40px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+@keyframes toastSlideDownAnim {
+  from { transform: translate(-50%, 0); opacity: 1; }
+  to { transform: translate(-50%, 20px); opacity: 0; }
+}
+
+/* -------------------------------------------------------------
+   CHATGPT SIDEBAR & INTRO ROTATION UTILITIES (v3.5 UPGRADE)
+   ------------------------------------------------------------- */
+
+/* Custom scrollbar for recents */
+.sidebar-recents-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-recents-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-recents-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: var(--radius-full);
+}
+.sidebar-recents-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--border-active);
+}
+
+/* Sidebar navigation item hover & transition effects */
+.sidebar-item-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 180ms ease;
+  text-align: left;
+  border-left: 2px solid transparent;
+  box-sizing: border-box;
+}
+
+.sidebar-item-container:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.sidebar-item-container.active {
+  border-left: 2px solid #818CF8;
+  background-color: var(--bg-accent-bg);
+  color: var(--text-primary);
+}
+
+/* Slow rotation keyframe for intro star */
+@keyframes introStarRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.star-welcome-rotate-linear {
+  animation: introStarRotate 16s linear infinite;
+  transform-origin: center;
+}
+
+/* Analytics & Micro Hover Effects */
+.hover-micro {
+  transition: background-color var(--t-micro) !important;
+}
+.hover-micro:hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+.metric-card-hover {
+  transition: transform var(--t-fast), box-shadow var(--t-fast), border-color var(--t-fast) !important;
+}
+.metric-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(129, 140, 248, 0.08);
+  border-color: var(--border-active) !important;
+}
+
+.chart-dot {
+  transition: all var(--t-fast) !important;
+  transform-origin: center;
+  cursor: pointer;
+}
+.chart-dot:hover {
+  r: 5px;
+  filter: drop-shadow(0 0 8px currentColor) brightness(1.3);
+}
+
+.chart-stroke {
+  transition: filter var(--t-fast);
+  cursor: crosshair;
+}
+.chart-stroke:hover {
+  filter: drop-shadow(0 0 12px rgba(129, 140, 248, 0.6));
+}
