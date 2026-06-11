@@ -1,11 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { UploadCloud, File, Check, RefreshCw } from 'lucide-react';
 
 export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
   const [step, setStep] = useState(-1); // -1: idle, 0: Reading, 1: Chunking, 2: Embedding, 3: Indexing, 4: Ready
   const [progress, setProgress] = useState(0);
-  const [uploadingFilename, setUploadingFilename] = useState('');
+  const fileInputRef = useRef(null);
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
+    setUploadingFilename(file.name);
+    setStep(0);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/ingest", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        setProgress(100);
+        setStep(4);
+      } else {
+        console.error("Upload failed");
+        setStep(-1);
+      }
+    } catch (err) {
+      console.error("Ingest error:", err);
+      setStep(-1);
+    }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
   // Mobile viewport width listener
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   useEffect(() => {
@@ -52,11 +83,11 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
     return () => clearTimeout(timer);
   }, [step]);
 
-  const triggerMockUpload = () => {
-    setUploadingFilename('q4_design_specifications.pdf');
-    setStep(0);
+  const triggerUpload = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
-
   const collections = [
     {
       id: 'project-docs',
@@ -109,7 +140,7 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
                 {col.id === 'project-docs' && indexedDocsCount > 3 && (
                   <div style={styles.fileItem} className="chip-mono">
                     <File size={11} style={{ marginRight: '6px', color: 'var(--text-muted)' }} />
-                    <span>{uploadingFilename || 'q4_design_specifications.pdf'}</span>
+                    <span>{uploadingFilename}</span>
                   </div>
                 )}
               </div>
@@ -118,7 +149,8 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
               <button style={styles.ghostBtn} className="caption hover-color">
                 <RefreshCw size={12} style={{ marginRight: '4px' }} /> Re-index
               </button>
-              <button style={styles.ghostBtn} className="caption hover-color" onClick={triggerMockUpload}>
+              <button style={styles.ghostBtn} className="caption hover-color"
+                onClick={triggerUpload}>
                 + Add docs
               </button>
             </div>
@@ -128,15 +160,37 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
 
       {/* Upload zone */}
       <div style={styles.uploadSection}>
-        <div style={{ ...styles.uploadZone, padding: isMobile ? '24px' : '40px' }} onClick={triggerMockUpload}>
+
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={handleFileUpload}
+          accept=".pdf,.docx,.doc,.txt,.md"
+        />
+
+        <div
+          style={{ ...styles.uploadZone, padding: isMobile ? '24px' : '40px' }}
+          onClick={triggerUpload}
+        >
           <div style={styles.uploadIcon}>
             <UploadCloud size={32} />
           </div>
-          <span style={styles.uploadTitle}>Drop files here</span>
-          <button style={styles.browseLink}>or browse files</button>
-          <span style={styles.uploadCaption} className="caption">PDF · DOCX · TXT · MD · Max 50MB</span>
-        </div>
 
+          <span style={styles.uploadTitle}>Drop files here</span>
+
+          <button
+            type="button"
+            style={styles.browseLink}
+            onClick={triggerUpload}
+          >
+            or browse files
+          </button>
+
+          <span style={styles.uploadCaption} className="caption">
+            PDF · DOCX · TXT · MD · Max 50MB
+          </span>
+        </div>
         {/* Processing State Inline */}
         {step !== -1 && (
           <div style={styles.processingRow}>
@@ -148,19 +202,19 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
             <div style={styles.progressTimeline}>
               <span style={styles.stepIndicator}>
                 {step === 0 ? 'Reading PDF...' :
-                 step === 1 ? 'Chunking Nodes...' :
-                 step === 2 ? `Embedding vectors (${progress}%)...` :
-                 step === 3 ? 'Storing vectors...' :
-                 'Ingestion Complete'}
+                  step === 1 ? 'Chunking Nodes...' :
+                    step === 2 ? `Embedding vectors (${progress}%)...` :
+                      step === 3 ? 'Storing vectors...' :
+                        'Ingestion Complete'}
               </span>
 
               {/* Progress bar track */}
               <div style={styles.progressTrack}>
-                <div 
+                <div
                   style={{
                     ...styles.progressFill,
                     width: step === 4 ? '100%' : step === 2 ? `${progress}%` : step > 2 ? '100%' : '15%',
-                    background: step === 4 
+                    background: step === 4
                       ? 'linear-gradient(90deg, #818CF8, #38BDF8, #34D399, #A78BFA)'
                       : 'var(--amber-accent)'
                   }}
