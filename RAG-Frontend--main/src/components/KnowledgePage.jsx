@@ -6,6 +6,7 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
   const [progress, setProgress] = useState(0);
   const [uploadingFilename, setUploadingFilename] = useState('');
   const [collections, setCollections] = useState([
+    
     {
       id: 'db',
       name: 'Database Docs',
@@ -39,7 +40,6 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
   }, []);
 
   const fileInputRef = useRef(null);
-
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -51,32 +51,14 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
     formData.append("file", file);
 
     try {
-      // Simulate progress for UI since fetch doesn't natively support upload progress
-      let simProgress = 0;
-      const interval = setInterval(() => {
-        simProgress += 15;
-        if (simProgress > 90) clearInterval(interval);
-        else {
-          setStep(2);
-          setProgress(simProgress);
-        }
-      }, 200);
-
       const res = await fetch("http://127.0.0.1:8000/ingest", {
         method: "POST",
         body: formData,
       });
-      clearInterval(interval);
-      
+
       if (res.ok) {
         setProgress(100);
         setStep(4);
-        setTimeout(() => {
-          onUploadComplete(file.name);
-          setStep(-1);
-          setProgress(0);
-          setUploadingFilename('');
-        }, 1000);
       } else {
         console.error("Upload failed");
         setStep(-1);
@@ -85,18 +67,11 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
       console.error("Ingest error:", err);
       setStep(-1);
     }
-    
+
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
-
-  const triggerUpload = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
 
 
   return (
@@ -127,7 +102,7 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
                 {col.id === 'project-docs' && indexedDocsCount > 3 && (
                   <div style={styles.fileItem} className="chip-mono">
                     <File size={11} style={{ marginRight: '6px', color: 'var(--text-muted)' }} />
-                    <span>{uploadingFilename || 'q4_design_specifications.pdf'}</span>
+                    <span>{uploadingFilename}</span>
                   </div>
                 )}
               </div>
@@ -146,15 +121,21 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
 
       {/* Upload zone */}
       <div style={styles.uploadSection}>
-        <input 
-          type="file" 
-          ref={fileInputRef} 
-          style={{ display: 'none' }} 
-          onChange={handleFileUpload}
-          accept=".pdf,.docx,.doc,.txt,.md"
-        />
+       <input
+  type="file"
+  ref={fileInputRef}
+  style={{ display: 'none' }}
+  onChange={(e) => {
+    alert("FILE SELECTED");
+    handleFileUpload(e);
+  }}
+  accept=".pdf,.docx,.doc,.txt,.md"
+/>
         <div
-          style={{ ...styles.uploadZone, padding: isMobile ? '24px' : '40px' }}
+          style={{
+            ...styles.uploadZone,
+            padding: isMobile ? '24px' : '40px'
+          }}
           onClick={triggerUpload}
         >
           <div style={styles.uploadIcon}>
@@ -176,19 +157,19 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
             <div style={styles.progressTimeline}>
               <span style={styles.stepIndicator}>
                 {step === 0 ? 'Reading PDF...' :
-                 step === 1 ? 'Chunking Nodes...' :
-                 step === 2 ? `Embedding vectors (${progress}%)...` :
-                 step === 3 ? 'Storing vectors...' :
-                 'Ingestion Complete'}
+                  step === 1 ? 'Chunking Nodes...' :
+                    step === 2 ? `Embedding vectors (${progress}%)...` :
+                      step === 3 ? 'Storing vectors...' :
+                        'Ingestion Complete'}
               </span>
 
               {/* Progress bar track */}
               <div style={styles.progressTrack}>
-                <div 
+                <div
                   style={{
                     ...styles.progressFill,
                     width: step === 4 ? '100%' : step === 2 ? `${progress}%` : step > 2 ? '100%' : '15%',
-                    background: step === 4 
+                    background: step === 4
                       ? 'linear-gradient(90deg, #818CF8, #38BDF8, #34D399, #A78BFA)'
                       : 'var(--amber-accent)'
                   }}

@@ -2,12 +2,21 @@ import React, { useState, useEffect, useRef } from 'react';
 import { UploadCloud, File, Check, RefreshCw } from 'lucide-react';
 
 export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
-  const [step, setStep] = useState(-1); // -1: idle, 0: Reading, 1: Chunking, 2: Embedding, 3: Indexing, 4: Ready
+  const [step, setStep] = useState(-1);
   const [progress, setProgress] = useState(0);
+  const [uploadingFilename, setUploadingFilename] = useState('');
   const fileInputRef = useRef(null);
   const handleFileUpload = async (e) => {
+    console.log("handleFileUpload fired");
+
     const file = e.target.files[0];
-    if (!file) return;
+
+    console.log("Selected file:", file);
+
+    if (!file) {
+      console.log("No file selected");
+      return;
+    }
 
     setUploadingFilename(file.name);
     setStep(0);
@@ -20,6 +29,8 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
         method: "POST",
         body: formData,
       });
+
+      console.log("Response status:", res.status);
 
       if (res.ok) {
         setProgress(100);
@@ -84,6 +95,9 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
   }, [step]);
 
   const triggerUpload = () => {
+    console.log("triggerUpload called");
+    console.log(fileInputRef.current);
+
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
@@ -182,7 +196,10 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
           <button
             type="button"
             style={styles.browseLink}
-            onClick={triggerUpload}
+            onClick={(e) => {
+              e.stopPropagation();
+              triggerUpload();
+            }}
           >
             or browse files
           </button>

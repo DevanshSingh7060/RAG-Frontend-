@@ -147,7 +147,7 @@ export default function App() {
       setPlayIntro(false);
       try {
         localStorage.setItem('rag_v2_4_intro_played', 'true');
-      } catch (e) {}
+      } catch (e) { }
     }, 2200);
 
     return () => {
@@ -194,7 +194,7 @@ export default function App() {
   const handleIntroComplete = () => {
     try {
       localStorage.setItem('rag_v2_4_intro_played', 'true');
-    } catch (e) {}
+    } catch (e) { }
     setPlayIntro(false);
   };
 
@@ -229,24 +229,36 @@ export default function App() {
       }, 3000); // rhythmic tick every 3s
     }
 
-    setTimeout(() => {
+    setTimeout(async () => {
       clearInterval(thinkingVibrateTimer);
       triggerHaptic('light'); // arrival tick
+      const response = await fetch("http://127.0.0.1:8000/query", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          question: userPrompt
+        })
+      });
+      const fullText = data.answer;
 
-      const fullText = "Based on the Q3 product roadmap [1], the primary milestones include vector indexing completion by next Tuesday and client-side streaming optimization. The core document specifies that high confidence retrieval requires a threshold score above 80% [2]. However, some research papers advise caution on caching large embeddings because of latency penalties [3].";
-      
+
+
+      const data = await response.json();
+
       const words = fullText.split(' ');
       let currentWordIndex = 0;
       let streamedContent = '';
 
-      setMessages(prev => 
+      setMessages(prev =>
         prev.map(m => {
           if (m.id === assistantMsgId) {
             return {
               ...m,
               isThinking: false,
               isStreaming: true,
-              sources: mockSources,
+              sources: data.sources || [],
               latency: '847ms'
             };
           }
@@ -257,7 +269,7 @@ export default function App() {
       const interval = setInterval(() => {
         if (currentWordIndex < words.length) {
           streamedContent += (currentWordIndex === 0 ? '' : ' ') + words[currentWordIndex];
-          setMessages(prev => 
+          setMessages(prev =>
             prev.map(m => {
               if (m.id === assistantMsgId) {
                 return {
@@ -271,7 +283,7 @@ export default function App() {
           currentWordIndex++;
         } else {
           clearInterval(interval);
-          setMessages(prev => 
+          setMessages(prev =>
             prev.map(m => {
               if (m.id === assistantMsgId) {
                 return {
@@ -291,13 +303,13 @@ export default function App() {
 
   const handleNewChat = () => {
     triggerHaptic('medium');
-    
+
     // Clear chat states and set back to landing
     setMessages([]);
     setTokenCount('1,247');
     setView('landing');
     setMobileDrawerOpen(false);
-    
+
     // Trigger cinematic welcome intro overlay
     setIntroStep('void');
     setIntroStarCoords({
@@ -314,41 +326,41 @@ export default function App() {
     triggerHaptic('medium');
     setView('app');
     setActiveTab('chat');
-    
+
     // Load custom mock message histories corresponding to the recent chat titles
     if (chatId === 'chat-1') {
       setMessages([
         { id: 'u1', role: 'user', content: 'Roadmap Milestone alignment', timestamp: '2h ago' },
-        { 
-          id: 'a1', 
-          role: 'assistant', 
-          content: 'Based on the Q3 product roadmap, the primary milestones include vector indexing completion by next Tuesday and client-side streaming optimization. We verified that the dev build runs cleanly.', 
-          timestamp: '2h ago', 
-          model: 'GPT-4o' 
+        {
+          id: 'a1',
+          role: 'assistant',
+          content: 'Based on the Q3 product roadmap, the primary milestones include vector indexing completion by next Tuesday and client-side streaming optimization. We verified that the dev build runs cleanly.',
+          timestamp: '2h ago',
+          model: 'GPT-4o'
         }
       ]);
       setTokenCount('1,247');
     } else if (chatId === 'chat-2') {
       setMessages([
         { id: 'u2', role: 'user', content: 'Threshold validation research', timestamp: '1d ago' },
-        { 
-          id: 'a2', 
-          role: 'assistant', 
-          content: 'I analyzed confidence threshold score behavior. Standard retrieval hygiene requires a score above 80% to filter low-confidence nodes.', 
-          timestamp: '1d ago', 
-          model: 'Claude 3.5' 
+        {
+          id: 'a2',
+          role: 'assistant',
+          content: 'I analyzed confidence threshold score behavior. Standard retrieval hygiene requires a score above 80% to filter low-confidence nodes.',
+          timestamp: '1d ago',
+          model: 'Claude 3.5'
         }
       ]);
       setTokenCount('984');
     } else if (chatId === 'chat-3') {
       setMessages([
         { id: 'u3', role: 'user', content: 'Latency metrics analysis', timestamp: '3d ago' },
-        { 
-          id: 'a3', 
-          role: 'assistant', 
-          content: 'Average query round-trip latency decreased by 12% to 834ms over the past week due to indexing improvements.', 
-          timestamp: '3d ago', 
-          model: 'Gemini Pro' 
+        {
+          id: 'a3',
+          role: 'assistant',
+          content: 'Average query round-trip latency decreased by 12% to 834ms over the past week due to indexing improvements.',
+          timestamp: '3d ago',
+          model: 'Gemini Pro'
         }
       ]);
       setTokenCount('1,421');
@@ -357,7 +369,7 @@ export default function App() {
 
   const handleSelectModel = (modelId) => {
     triggerHaptic('medium');
-    
+
     // Trigger the localized model pill animation
     setIsModelPillAnimating(true);
 
@@ -374,7 +386,7 @@ export default function App() {
   // Coordinate physical star travel transition Landing -> Chat v3.0
   const handleSendMessage = (text) => {
     triggerHaptic('medium');
-    
+
     if (view === 'landing') {
       const centerSize = isMobile ? 40 : 48;
       // Initialize traveling star dummy at center star coordinates/size
@@ -434,13 +446,13 @@ export default function App() {
   };
 
   return (
-    <div 
+    <div
       style={styles.appContainer}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
       {/* Stacked background gradients Layer 1-4 (Void bloom v2.4) */}
-      <div 
+      <div
         className={`aurora-container ${view === 'app' ? 'chat-mode' : 'landing-mode'} ${isModelSwitching ? 'switching-active' : ''}`}
         style={{
           opacity: (introStep === 'void' || isDarkReset || isModelSwitching) ? 0 : 1,
@@ -464,11 +476,11 @@ export default function App() {
       </div>
 
       {/* Gemini Bottom Breathing Gradient v2.9 */}
-      <div 
+      <div
         className="bottom-breathing-gradient"
         style={{
-          bottom: view === 'landing' 
-            ? '-30px' 
+          bottom: view === 'landing'
+            ? '-30px'
             : (isMobile ? '100px' : '80px'),
           opacity: (introStep === 'void' || isDarkReset || isModelSwitching) ? 0 : 1,
           transition: isDarkReset ? 'opacity 180ms ease-out' : 'bottom 500ms var(--ease-spring), opacity 700ms var(--ease-standard)'
@@ -538,7 +550,7 @@ export default function App() {
             setIntroStep('settled');
             try {
               localStorage.setItem('rag_v2_4_intro_played', 'true');
-            } catch (e) {}
+            } catch (e) { }
           }}
         >
           {/* Welcome space for star (traveling star floats over this center layout) */}
@@ -596,12 +608,12 @@ export default function App() {
         /* ======================================================== */
         /* SCREEN 1: LANDING EXPERIENCE                             */
         /* ======================================================== */
-        <div 
+        <div
           style={{ ...styles.landingLayout, padding: isMobile ? '16px' : '24px' }}
           className="settled-landing-fade-in"
         >
           {/* Top minimal bar */}
-          <div 
+          <div
             style={{
               ...styles.landingTopBar,
               opacity: (introStep === 'settled' || introStep === 'transitioning') ? 1 : 0,
@@ -617,7 +629,7 @@ export default function App() {
                 ) : (
                   <div style={{ width: '28px', height: '28px' }} />
                 )}
-                <span 
+                <span
                   style={{
                     ...styles.landingTopText,
                     opacity: (introStep === 'settled' || introStep === 'transitioning') ? 1 : 0,
@@ -635,7 +647,7 @@ export default function App() {
           </div>
 
           {/* Central Question Box */}
-          <div 
+          <div
             style={{
               ...styles.landingCenter,
               opacity: (introStep === 'settled' || introStep === 'transitioning') ? 1 : 0,
@@ -654,7 +666,7 @@ export default function App() {
             </h2>
 
             {/* Input Pill bar */}
-            <div 
+            <div
               style={{
                 ...styles.heroInputContainer,
                 height: isMobile ? '56px' : '60px',
@@ -680,11 +692,11 @@ export default function App() {
                 style={styles.heroInput}
                 className="gradient-placeholder"
               />
-              <button 
+              <button
                 style={{
                   ...styles.heroSendBtn,
-                  background: landingInput.trim() 
-                    ? 'linear-gradient(135deg, #818CF8, #38BDF8, #34D399)' 
+                  background: landingInput.trim()
+                    ? 'linear-gradient(135deg, #818CF8, #38BDF8, #34D399)'
                     : 'var(--bg-elevated)',
                   border: landingInput.trim() ? 'none' : '1px solid var(--border-subtle)',
                   boxShadow: landingInput.trim() ? '0 0 12px rgba(129,140,248,0.4)' : 'none'
@@ -699,21 +711,21 @@ export default function App() {
 
             {/* Suggestions */}
             <div style={{ ...styles.landingSuggestions, gap: isMobile ? '8px' : '10px' }}>
-              <button 
+              <button
                 style={{ ...styles.suggestionPill, height: isMobile ? '44px' : '32px', padding: isMobile ? '0 12px' : '0 16px' }}
                 className="hover-micro premium-border-pill"
                 onClick={() => handleSendMessage("Summarize my documents")}
               >
                 Summarize my documents
               </button>
-              <button 
+              <button
                 style={{ ...styles.suggestionPill, height: isMobile ? '44px' : '32px', padding: isMobile ? '0 12px' : '0 16px' }}
                 className="hover-micro premium-border-pill"
                 onClick={() => handleSendMessage("Find key insights")}
               >
                 Find key insights
               </button>
-              <button 
+              <button
                 style={{ ...styles.suggestionPill, height: isMobile ? '44px' : '32px', padding: isMobile ? '0 12px' : '0 16px' }}
                 className="hover-micro premium-border-pill"
                 onClick={() => handleSendMessage("Compare research")}
@@ -724,7 +736,7 @@ export default function App() {
           </div>
 
           {/* Bottom indicator */}
-          <div 
+          <div
             style={{
               ...styles.landingFooter,
               opacity: (introStep === 'settled' || introStep === 'transitioning') ? 1 : 0,
@@ -768,7 +780,7 @@ export default function App() {
           {/* Sidebar + Viewport Grid */}
           <div style={styles.mainLayout}>
             {/* Sidebar rail (hides on mobile, handles gestures/drawers) */}
-            <Sidebar 
+            <Sidebar
               activeTab={activeTab}
               setActiveTab={setActiveTab}
               mobileDrawerOpen={mobileDrawerOpen}
@@ -782,7 +794,7 @@ export default function App() {
             {/* Inner view routing */}
             <main style={styles.viewContent}>
               {activeTab === 'chat' && (
-                <MainChat 
+                <MainChat
                   messages={messages}
                   onSendMessage={handleSendMessage}
                   currentModel={currentModel === 'gpt-4o' ? 'GPT-4o' : currentModel === 'claude-3-5' ? 'Claude 3.5' : currentModel === 'gemini-pro' ? 'Gemini Pro' : 'Mixtral'}
@@ -817,14 +829,14 @@ export default function App() {
               )}
 
               {activeTab === 'knowledge' && (
-                <KnowledgePage 
+                <KnowledgePage
                   indexedDocsCount={indexedDocsCount}
                   onUploadComplete={handleUploadComplete}
                 />
               )}
 
               {activeTab === 'analytics' && (
-                <AnalyticsPage 
+                <AnalyticsPage
                   preExpandedRowId={preExpandedRowId}
                   setPreExpandedRowId={setPreExpandedRowId}
                   sources={mockSources}
@@ -844,10 +856,10 @@ export default function App() {
       {/* Apple Intelligence Switch Glow Overlays v2.9.4 */}
       {isModelSwitching && (
         <div className={`apple-border-tracer-container ${isFullGlowActive ? 'full-glow-active' : ''} ${isTracerFading ? 'tracer-fading' : ''}`}>
-          <svg 
-            width="100%" 
-            height="100%" 
-            viewBox="0 0 100 100" 
+          <svg
+            width="100%"
+            height="100%"
+            viewBox="0 0 100 100"
             preserveAspectRatio="none"
             style={{ position: 'absolute', top: 0, left: 0, overflow: 'visible', pointerEvents: 'none' }}
           >
