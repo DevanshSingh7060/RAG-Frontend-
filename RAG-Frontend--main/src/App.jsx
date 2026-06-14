@@ -208,15 +208,23 @@ export default function App() {
     setMessages((prev) => [...prev, userMsg, assistantMsg]);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/query", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          query: userPrompt,
-        }),
-      });
+      const response = await fetch("http://127.0.0.1:8000/query",
+
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: userPrompt,
+          }),
+        });
+      console.log("Status:", response.status);
+
+      if (!response.ok) {
+        console.log(await response.text());
+        return;
+      }
 
       const data = await response.json();
 

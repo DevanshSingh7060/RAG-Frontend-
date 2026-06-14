@@ -207,7 +207,7 @@ export default function MainChat({
                 <RagStar size={isMobile ? 40 : 48} mode="idle" />
               </div>
             )}
-            
+
             {/* Cinematic text reveal word-by-word */}
             {introFrame >= 3 && (
               <h2 style={styles.emptyGreeting} className="display-300">
@@ -220,14 +220,14 @@ export default function MainChat({
 
             {/* Input pill */}
             {introFrame >= 4 && (
-              <div 
+              <div
                 style={{
                   ...styles.heroInputContainer,
                   height: isMobile ? '56px' : '60px',
                   width: isMobile ? '100%' : '680px',
                   borderColor: isFocused ? 'var(--border-active)' : 'var(--border-subtle)',
-                  boxShadow: isFocused 
-                    ? '0 0 0 1px rgba(129, 140, 248, 0.2), 0 0 32px rgba(129, 140, 248, 0.07), 0 0 56px rgba(52, 211, 153, 0.04)' 
+                  boxShadow: isFocused
+                    ? '0 0 0 1px rgba(129, 140, 248, 0.2), 0 0 32px rgba(129, 140, 248, 0.07), 0 0 56px rgba(52, 211, 153, 0.04)'
                     : '0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03)',
                   animation: playIntro ? 'wordStreamReveal 500ms var(--ease-expo-out)' : 'none'
                 }}
@@ -251,11 +251,11 @@ export default function MainChat({
                   />
                   {isTypewriting && <span className="typing-cursor"></span>}
                 </div>
-                <button 
+                <button
                   style={{
                     ...styles.heroSendBtn,
-                    background: inputText.trim() 
-                      ? 'linear-gradient(135deg, #818CF8, #38BDF8, #34D399)' 
+                    background: inputText.trim()
+                      ? 'linear-gradient(135deg, #818CF8, #38BDF8, #34D399)'
                       : 'var(--bg-elevated)',
                     border: inputText.trim() ? 'none' : '1px solid var(--border-subtle)',
                     boxShadow: inputText.trim() ? '0 0 12px rgba(129,140,248,0.4)' : 'none'
@@ -272,24 +272,24 @@ export default function MainChat({
             {/* Staggered Suggestion Pills */}
             {introFrame >= 5 && (
               <div style={{ ...styles.suggestionsRow, gap: isMobile ? '8px' : '10px' }}>
-                <button 
-                  style={{ ...styles.suggestionPill, height: isMobile ? '44px' : '32px', padding: isMobile ? '0 12px' : '0 16px' }} 
+                <button
+                  style={{ ...styles.suggestionPill, height: isMobile ? '44px' : '32px', padding: isMobile ? '0 12px' : '0 16px' }}
                   className="hover-micro premium-border-pill"
                   onClick={() => handleSuggestionPress("Summarize my documents")}
                   disabled={isTypewriting}
                 >
                   Summarize my documents
                 </button>
-                <button 
-                  style={{ ...styles.suggestionPill, height: isMobile ? '44px' : '32px', padding: isMobile ? '0 12px' : '0 16px' }} 
+                <button
+                  style={{ ...styles.suggestionPill, height: isMobile ? '44px' : '32px', padding: isMobile ? '0 12px' : '0 16px' }}
                   className="hover-micro premium-border-pill"
                   onClick={() => handleSuggestionPress("Find key insights")}
                   disabled={isTypewriting}
                 >
                   Find key insights
                 </button>
-                <button 
-                  style={{ ...styles.suggestionPill, height: isMobile ? '44px' : '32px', padding: isMobile ? '0 12px' : '0 16px' }} 
+                <button
+                  style={{ ...styles.suggestionPill, height: isMobile ? '44px' : '32px', padding: isMobile ? '0 12px' : '0 16px' }}
                   className="hover-micro premium-border-pill"
                   onClick={() => handleSuggestionPress("Compare research")}
                   disabled={isTypewriting}
@@ -307,9 +307,9 @@ export default function MainChat({
             {messages.map((msg, index) => {
               const isLast = index === messages.length - 1;
               const isUser = msg.role === 'user';
-              
+
               return (
-                <div 
+                <div
                   key={msg.id || index}
                   style={{
                     ...styles.exchangeWrapper,
@@ -333,20 +333,20 @@ export default function MainChat({
                       )}
                     </div>
                   ) : (
-                     /* AI RESPONSE */
-                     <div style={styles.aiMsgContainer}>
+                    /* AI RESPONSE */
+                    <div style={styles.aiMsgContainer}>
                       {/* Response Header or Thinking state dots */}
                       <div style={{ position: 'relative', height: '28px', marginBottom: '12px' }}>
                         {/* Thinking Dots */}
-                        <div 
-                          style={{ 
+                        <div
+                          style={{
                             position: 'absolute',
                             top: 0,
                             left: 0,
-                            display: 'flex', 
-                            gap: '6px', 
-                            paddingLeft: '8px', 
-                            height: '28px', 
+                            display: 'flex',
+                            gap: '6px',
+                            paddingLeft: '8px',
+                            height: '28px',
                             alignItems: 'center',
                             opacity: msg.isThinking ? 1 : 0,
                             pointerEvents: msg.isThinking ? 'auto' : 'none',
@@ -359,7 +359,7 @@ export default function MainChat({
                         </div>
 
                         {/* AI Header */}
-                        <div 
+                        <div
                           style={{
                             ...styles.aiHeader,
                             position: 'absolute',
@@ -373,9 +373,9 @@ export default function MainChat({
                           }}
                         >
                           <div style={styles.starWrapper} className="fade-in-glow">
-                            <RagStar 
-                              size={28} 
-                              mode="streaming" 
+                            <RagStar
+                              size={28}
+                              mode="streaming"
                             />
                           </div>
                           <span style={styles.aiName}>RAG</span>
@@ -390,7 +390,7 @@ export default function MainChat({
 
                       {/* Response Body Text */}
                       {!msg.isThinking && (
-                        <div 
+                        <div
                           style={styles.aiBody}
                           className={`body-ai-400 ${isLast ? 'ai-response-block' : ''}`}
                         >
@@ -448,10 +448,10 @@ export default function MainChat({
                             {msg.latency || '847ms'}
                           </span>
                           <span style={styles.metaDivider}>·</span>
-                          
+
                           {/* Feedback Thumbs */}
                           <div style={styles.feedbackContainer}>
-                            <button 
+                            <button
                               style={{
                                 ...styles.feedbackBtn,
                                 color: votedMessages[msg.id] === 'up' ? 'var(--green-accent)' : 'var(--text-muted)'
@@ -460,7 +460,7 @@ export default function MainChat({
                             >
                               <ThumbsUp size={12} />
                             </button>
-                            <button 
+                            <button
                               style={{
                                 ...styles.feedbackBtn,
                                 color: votedMessages[msg.id] === 'down' ? 'var(--red-accent)' : 'var(--text-muted)'
@@ -475,18 +475,18 @@ export default function MainChat({
 
                       {/* Source Chips Row */}
                       {!msg.isThinking && !msg.isStreaming && msg.sources && (
-                        <div 
+                        <div
                           style={{
                             ...styles.sourceChipsRow,
                             opacity: isLast ? 1 : 0.45
                           }}
                         >
-                          {msg.sources.map(src => (
+                          {msg.sources.map((src, index) => (
                             <div
-                              key={src.id}
+                              key={src.source || index}
                               style={styles.sourceChip}
                               className="hover-micro chip-mono"
-                              onClick={() => onCitationClick(src.id)}
+                              onClick={() => onCitationClick(src.source || index)}
                             >
                               <Paperclip size={11} style={{ color: 'var(--text-muted)', marginRight: '4px' }} />
                               <span style={styles.chipText}>{src.filename}</span>
@@ -513,11 +513,11 @@ export default function MainChat({
           bottom: isMobile ? 'calc(56px + env(safe-area-inset-bottom) + 12px)' : '24px',
           padding: isMobile ? '0 16px' : '0 24px'
         }}>
-          <div 
+          <div
             style={{
               borderColor: isFocused ? 'var(--border-active)' : 'var(--border-subtle)',
-              boxShadow: isFocused 
-                ? '0 0 0 1px rgba(129, 140, 248, 0.2), 0 0 32px rgba(129, 140, 248, 0.07), 0 0 56px rgba(52, 211, 153, 0.04)' 
+              boxShadow: isFocused
+                ? '0 0 0 1px rgba(129, 140, 248, 0.2), 0 0 32px rgba(129, 140, 248, 0.07), 0 0 56px rgba(52, 211, 153, 0.04)'
                 : '0 -4px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.02)',
               ...styles.inputContainer
             }}
@@ -570,8 +570,8 @@ export default function MainChat({
               <button
                 style={{
                   ...styles.sendBtn,
-                  background: inputText.trim() 
-                    ? 'linear-gradient(135deg, #818CF8, #38BDF8, #34D399)' 
+                  background: inputText.trim()
+                    ? 'linear-gradient(135deg, #818CF8, #38BDF8, #34D399)'
                     : 'var(--bg-elevated)',
                   border: inputText.trim() ? 'none' : '1px solid var(--border-subtle)',
                   boxShadow: inputText.trim() ? '0 0 12px rgba(129,140,248,0.4), 0 0 24px rgba(129,140,248,0.15)' : 'none'
@@ -580,11 +580,11 @@ export default function MainChat({
                 onClick={handleSend}
                 disabled={!inputText.trim() || isTypewriting}
               >
-                <ArrowUp 
-                  size={16} 
-                  style={{ 
-                    color: inputText.trim() ? '#070709' : 'var(--text-muted)' 
-                  }} 
+                <ArrowUp
+                  size={16}
+                  style={{
+                    color: inputText.trim() ? '#070709' : 'var(--text-muted)'
+                  }}
                 />
               </button>
             </div>

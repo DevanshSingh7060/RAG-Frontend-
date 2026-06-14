@@ -500,7 +500,7 @@ export default function MainChat({
                               style={styles.sourceChip}
                               className="hover-micro chip-mono"
                               onClick={() => onCitationClick(src.id)}
-                            >
+                            >   
                               <Paperclip size={11} style={{ color: 'var(--text-muted)', marginRight: '4px' }} />
                               <span style={styles.chipText}>{src.filename}</span>
                               <span style={styles.chipDivider}>·</span>

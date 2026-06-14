@@ -238,14 +238,16 @@ export default function App() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          question: userPrompt
+          query: userPrompt
         })
       });
-      const fullText = data.answer;
+
 
 
 
       const data = await response.json();
+
+const fullText = data.answer;
 
       const words = fullText.split(' ');
       let currentWordIndex = 0;
