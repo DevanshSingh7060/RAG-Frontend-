@@ -232,7 +232,7 @@ export default function App() {
     setTimeout(async () => {
       clearInterval(thinkingVibrateTimer);
       triggerHaptic('light'); // arrival tick
-      const response = await fetch("http://127.0.0.1:8000/query", {
+      const response = await fetch("http://127.0.0.1:8000/stream-query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -242,64 +242,56 @@ export default function App() {
         })
       });
 
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      let fullText = "";
 
 
-
-      const data = await response.json();
-
-const fullText = data.answer;
-
-      const words = fullText.split(' ');
-      let currentWordIndex = 0;
-      let streamedContent = '';
-
-      setMessages(prev =>
-        prev.map(m => {
-          if (m.id === assistantMsgId) {
-            return {
-              ...m,
-              isThinking: false,
-              isStreaming: true,
-              sources: data.sources || [],
-              latency: '847ms'
-            };
-          }
-          return m;
-        })
-      );
-
-      const interval = setInterval(() => {
-        if (currentWordIndex < words.length) {
-          streamedContent += (currentWordIndex === 0 ? '' : ' ') + words[currentWordIndex];
-          setMessages(prev =>
-            prev.map(m => {
-              if (m.id === assistantMsgId) {
-                return {
-                  ...m,
-                  content: streamedContent
-                };
-              }
-              return m;
-            })
-          );
-          currentWordIndex++;
-        } else {
-          clearInterval(interval);
-          setMessages(prev =>
-            prev.map(m => {
-              if (m.id === assistantMsgId) {
-                return {
-                  ...m,
-                  isStreaming: false
-                };
-              }
-              return m;
-            })
-          );
-          setTokenCount('2,494');
+    setMessages(prev =>
+  prev.map(msg =>
+    msg.id === assistantMsgId
+      ? {
+          ...msg,
+          isThinking: false,
+          isStreaming: true,
+          content: ""
         }
-      }, 70);
+      : msg
+  )
+);
 
+while (true) {
+  const { value, done } = await reader.read();
+
+  if (done) break;
+
+  const chunk = decoder.decode(value);
+
+  fullText += chunk.replace(/data:\s*/g, "");
+
+  setMessages(prev =>
+    prev.map(msg =>
+      msg.id === assistantMsgId
+        ? {
+            ...msg,
+            content: fullText
+          }
+        : msg
+    )
+  );
+}
+
+setMessages(prev =>
+  prev.map(msg =>
+    msg.id === assistantMsgId
+      ? {
+          ...msg,
+          isStreaming: false
+        }
+      : msg
+  )
+);
     }, 2000); // 2s pulsing loader
   };
 
