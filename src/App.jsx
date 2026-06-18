@@ -248,50 +248,50 @@ export default function App() {
       let fullText = "";
 
 
-    setMessages(prev =>
-  prev.map(msg =>
-    msg.id === assistantMsgId
-      ? {
-          ...msg,
-          isThinking: false,
-          isStreaming: true,
-          content: ""
-        }
-      : msg
-  )
-);
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === assistantMsgId
+            ? {
+              ...msg,
+              isThinking: false,
+              isStreaming: true,
+              content: ""
+            }
+            : msg
+        )
+      );
 
-while (true) {
-  const { value, done } = await reader.read();
+      while (true) {
+        const { value, done } = await reader.read();
 
-  if (done) break;
+        if (done) break;
 
-  const chunk = decoder.decode(value);
+        const chunk = decoder.decode(value);
 
-  fullText += chunk.replace(/data:\s*/g, "");
+        fullText += chunk.replace(/data:\s*/g, "");
 
-  setMessages(prev =>
-    prev.map(msg =>
-      msg.id === assistantMsgId
-        ? {
-            ...msg,
-            content: fullText
-          }
-        : msg
-    )
-  );
-}
+        setMessages(prev =>
+          prev.map(msg =>
+            msg.id === assistantMsgId
+              ? {
+                ...msg,
+                content: fullText
+              }
+              : msg
+          )
+        );
+      }
 
-setMessages(prev =>
-  prev.map(msg =>
-    msg.id === assistantMsgId
-      ? {
-          ...msg,
-          isStreaming: false
-        }
-      : msg
-  )
-);
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === assistantMsgId
+            ? {
+              ...msg,
+              isStreaming: false
+            }
+            : msg
+        )
+      );
     }, 2000); // 2s pulsing loader
   };
 
