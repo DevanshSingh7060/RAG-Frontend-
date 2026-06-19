@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { UploadCloud, File, Check, RefreshCw } from 'lucide-react';
 
 export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
+  const [documents, setDocuments] = useState([]);
   const [step, setStep] = useState(-1);
   const [progress, setProgress] = useState(0);
   const [uploadingFilename, setUploadingFilename] = useState('');
@@ -48,6 +49,17 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
       fileInputRef.current.value = "";
     }
   };
+  const fetchDocuments = async () => {
+  try {
+    const res = await fetch("http://127.0.0.1:8000/documents");
+    const data = await res.json();
+
+    setDocuments(data.documents);
+  } catch (err) {
+    console.error("Error fetching documents:", err);
+  }
+};
+
   // Mobile viewport width listener
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   useEffect(() => {
@@ -102,29 +114,15 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
       fileInputRef.current.click();
     }
   };
-  const collections = [
-    {
-      id: 'project-docs',
-      name: 'Project Docs',
-      count: `${indexedDocsCount} docs`,
-      updated: '2 hours ago',
-      files: ['Q3_Product_Roadmap.pdf', 'RAG_Confidence_Thresholds.md', 'Project_Overview.txt']
-    },
-    {
-      id: 'research-papers',
-      name: 'Research Papers',
-      count: '8 docs',
-      updated: '1 day ago',
-      files: ['Attention_Is_All_You_Need.pdf', 'Embeddings_Study.txt', 'Vector_Search_Deep_Dive.pdf']
-    },
-    {
-      id: 'personal-notes',
-      name: 'Personal Notes',
-      count: '31 docs',
-      updated: '3 days ago',
-      files: ['Milestone_notes.md', 'Model_Comparison_Log.txt', 'Embedding_latency_study.txt']
-    }
-  ];
+    const collections = [
+  {
+    id: "uploaded-documents",
+    name: "Uploaded Documents",
+    count: `${documents.length} docs`,
+    updated: "Live",
+    files: documents
+  }
+];
 
   return (
     <div style={{ ...styles.container, padding: isMobile ? '16px 16px 80px 16px' : '40px' }} className="custom-scrollbar">
@@ -181,7 +179,7 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
           style={{ display: 'none' }}
           onChange={handleFileUpload}
           accept=".pdf,.docx,.doc,.txt,.md"
-        />
+        />const collections =
 
         <div
           style={{ ...styles.uploadZone, padding: isMobile ? '24px' : '40px' }}
