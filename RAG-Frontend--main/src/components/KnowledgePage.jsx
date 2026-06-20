@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { UploadCloud, File, Check, RefreshCw } from 'lucide-react';
 
 export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
+  console.log("KnowledgePage Loaded");
   const [step, setStep] = useState(-1); // -1: idle, 0: Reading, 1: Chunking, 2: Embedding, 3: Indexing, 4: Ready
   const [progress, setProgress] = useState(0);
   const [uploadingFilename, setUploadingFilename] = useState('');
@@ -15,218 +16,222 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
       files: []
     }
   ]);
-
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/documents")
-      .then(res => res.json())
-      .then(data => {
-        console.log("Documents API:", data);
-
-        setCollections([{
-          id: 'db',
-          name: 'Database Docs',
-          count: `${data.documents ? data.documents.length : 0} docs`,
-          updated: 'Just now',
-          files: data.documents || []
-        }]);
-      })
-    setCollections([{
-      id: 'db',
-      name: 'Database Docs',
-      count: `${data.documents ? data.documents.length : 0} docs`,
-      updated: 'Just now',
-      files: data.documents || []
-    }]);
-  })
-    .catch(console.error);
-}, [indexedDocsCount]);
-
-// Mobile viewport width listener
-const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-useEffect(() => {
-  const handleResize = () => setIsMobile(window.innerWidth <= 768);
-  window.addEventListener('resize', handleResize);
-  return () => window.removeEventListener('resize', handleResize);
-}, []);
-useEffect(() => {
-  fetchDocuments();
-}, []);
-
-const fileInputRef = useRef(null);
-const handleFileUpload = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  setUploadingFilename(file.name);
-  setStep(0);
-
-  const formData = new FormData();
-  formData.append("file", file);
-
+  const fetchDocuments = async () => {
   try {
-    const res = await fetch("http://127.0.0.1:8000/ingest", {
-      method: "POST",
-      body: formData,
-    });
+    console.log("fetchDocuments called");
 
-    if (res.ok) {
-      fetchDocuments();
-      setProgress(100);
-      setStep(4);
-    } else {
-      console.error("Upload failed");
-      setStep(-1);
-    }
+    const res = await fetch("http://127.0.0.1:8000/documents");
+    const data = await res.json();
+
+    console.log("API Response:", data);
+
+    setCollections([
+      {
+        id: "db",
+        name: "Uploaded Documents",
+        count: `${data.documents?.length || 0} docs`,
+        updated: "Live",
+        files: data.documents || [],
+      },
+    ]);
+
+    console.log("Collections state updated");
   } catch (err) {
-    console.error("Ingest error:", err);
-    setStep(-1);
-  }
-
-  if (fileInputRef.current) {
-    fileInputRef.current.value = "";
+    console.error(err);
   }
 };
 
 
-return (
-  <div style={{ ...styles.container, padding: isMobile ? '16px 16px 80px 16px' : '40px' }} className="custom-scrollbar">
-    {/* Header */}
-    <div style={styles.header}>
-      <h2 style={styles.title}>Knowledge</h2>
-      <p style={styles.subtitle}>Manage your document collections and knowledge bases.</p>
-    </div>
 
-    {/* Grid of collections */}
-    <div style={styles.grid}>
-      {collections.map(col => (
-        <div key={col.id} style={styles.card}>
-          <div style={styles.cardHeader}>
-            <span style={styles.cardName}>{col.name}</span>
-            <span style={styles.docPill} className="caption">{col.count}</span>
-          </div>
-          <div style={styles.cardBody}>
-            <span style={styles.updatedText}>Last updated {col.updated}</span>
-            <div style={styles.fileList}>
-              {col.files.map((file, index) => (
-                <div
-                  key={index}
-                  style={{
-                    ...styles.fileItem,
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center"
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center" }}>
+  // Mobile viewport width listener
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  useEffect(() => {
+    console.log("Calling fetchDocuments...");
+    fetchDocuments();
+  }, []);
+  const fileInputRef = useRef(null);
+  const triggerUpload = () => {
+    fileInputRef.current?.click();
+  };
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingFilename(file.name);
+    setStep(0);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/ingest", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        fetchDocuments();
+        setProgress(100);
+        setStep(4);
+      } else {
+        console.error("Upload failed");
+        setStep(-1);
+      }
+    } catch (err) {
+      console.error("Ingest error:", err);
+      setStep(-1);
+    }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+
+  return (
+    <div style={{ ...styles.container, padding: isMobile ? '16px 16px 80px 16px' : '40px' }} className="custom-scrollbar">
+      {/* Header */}
+      <div style={styles.header}>
+        <h2 style={styles.title}>Knowledge</h2>
+        <p style={styles.subtitle}>Manage your document collections and knowledge bases.</p>
+      </div>
+
+      {/* Grid of collections */}
+      <div style={styles.grid}>
+        {collections.map(col => (
+          <div key={col.id} style={styles.card}>
+            <div style={styles.cardHeader}>
+              <span style={styles.cardName}>{col.name}</span>
+              <span style={styles.docPill} className="caption">{col.count}</span>
+            </div>
+            <div style={styles.cardBody}>
+              <span style={styles.updatedText}>Last updated {col.updated}</span>
+              <div style={styles.fileList}>
+                {col.files.map((file, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      ...styles.fileItem,
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center"
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <File
+                        size={11}
+                        style={{ marginRight: "6px", color: "var(--text-muted)" }}
+                      />
+                      <span>{file}</span>
+                    </div>
+
+                    <button
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        color: "red",
+                        cursor: "pointer"
+                      }}
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                ))}
+                {col.id === "db" && uploadingFilename && (
+                  <div style={styles.fileItem}>
                     <File
                       size={11}
                       style={{ marginRight: "6px", color: "var(--text-muted)" }}
                     />
-                    <span>{file}</span>
+                    <span>{uploadingFilename}</span>
                   </div>
+                )}
+              </div>
+            </div>
+            <div style={styles.cardFooter}>
+              <button style={styles.ghostBtn} className="caption hover-color">
+                <RefreshCw size={12} style={{ marginRight: '4px' }} /> Re-index
+              </button>
+              <button style={styles.ghostBtn} className="caption hover-color" onClick={triggerUpload}>
+                + Add docs
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
 
-                  <button
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      color: "red",
-                      cursor: "pointer"
-                    }}
-                  >
-                    🗑️
-                  </button>
-                </div>
-              ))}
-              {col.id === 'project-docs' && indexedDocsCount > 3 && (
-                <div style={styles.fileItem} className="chip-mono">
-                  <File size={11} style={{ marginRight: '6px', color: 'var(--text-muted)' }} />
-                  <span>{uploadingFilename}</span>
-                </div>
+      {/* Upload zone */}
+      <div style={styles.uploadSection}>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={handleFileUpload}
+          accept=".pdf,.docx,.doc,.txt,.md"
+        />
+        <div
+          style={{
+            ...styles.uploadZone,
+            padding: isMobile ? '24px' : '40px'
+          }}
+          onClick={triggerUpload}
+        >
+          <div style={styles.uploadIcon}>
+            <UploadCloud size={32} />
+          </div>
+          <span style={styles.uploadTitle}>Drop files here</span>
+          <button style={styles.browseLink}>or browse files</button>
+          <span style={styles.uploadCaption} className="caption">PDF · DOCX · TXT · MD · Max 50MB</span>
+        </div>
+
+        {/* Processing State Inline */}
+        {step !== -1 && (
+          <div style={styles.processingRow}>
+            <div style={styles.processingFile}>
+              <File size={16} style={{ color: '#818CF8', marginRight: '10px' }} />
+              <span style={styles.processingName}>{uploadingFilename}</span>
+            </div>
+
+            <div style={styles.progressTimeline}>
+              <span style={styles.stepIndicator}>
+                {step === 0 ? 'Reading PDF...' :
+                  step === 1 ? 'Chunking Nodes...' :
+                    step === 2 ? `Embedding vectors (${progress}%)...` :
+                      step === 3 ? 'Storing vectors...' :
+                        'Ingestion Complete'}
+              </span>
+
+              {/* Progress bar track */}
+              <div style={styles.progressTrack}>
+                <div
+                  style={{
+                    ...styles.progressFill,
+                    width: step === 4 ? '100%' : step === 2 ? `${progress}%` : step > 2 ? '100%' : '15%',
+                    background: step === 4
+                      ? 'linear-gradient(90deg, #818CF8, #38BDF8, #34D399, #A78BFA)'
+                      : 'var(--amber-accent)'
+                  }}
+                />
+              </div>
+
+              {step === 4 ? (
+                <div style={styles.completeIcon}><Check size={12} /></div>
+              ) : (
+                <span style={styles.percentText} className="token-mono">
+                  {step === 2 ? `${progress}%` : '...'}
+                </span>
               )}
             </div>
           </div>
-          <div style={styles.cardFooter}>
-            <button style={styles.ghostBtn} className="caption hover-color">
-              <RefreshCw size={12} style={{ marginRight: '4px' }} /> Re-index
-            </button>
-            <button style={styles.ghostBtn} className="caption hover-color" onClick={triggerUpload}>
-              + Add docs
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
-
-    {/* Upload zone */}
-    <div style={styles.uploadSection}>
-      <input
-        type="file"
-        ref={fileInputRef}
-        style={{ display: 'none' }}
-        onChange={(e) => {
-          alert("FILE SELECTED");
-          handleFileUpload(e);
-        }}
-        accept=".pdf,.docx,.doc,.txt,.md"
-      />
-      <div
-        style={{
-          ...styles.uploadZone,
-          padding: isMobile ? '24px' : '40px'
-        }}
-        onClick={triggerUpload}
-      >
-        <div style={styles.uploadIcon}>
-          <UploadCloud size={32} />
-        </div>
-        <span style={styles.uploadTitle}>Drop files here</span>
-        <button style={styles.browseLink}>or browse files</button>
-        <span style={styles.uploadCaption} className="caption">PDF · DOCX · TXT · MD · Max 50MB</span>
+        )}
       </div>
-
-      {/* Processing State Inline */}
-      {step !== -1 && (
-        <div style={styles.processingRow}>
-          <div style={styles.processingFile}>
-            <File size={16} style={{ color: '#818CF8', marginRight: '10px' }} />
-            <span style={styles.processingName}>{uploadingFilename}</span>
-          </div>
-
-          <div style={styles.progressTimeline}>
-            <span style={styles.stepIndicator}>
-              {step === 0 ? 'Reading PDF...' :
-                step === 1 ? 'Chunking Nodes...' :
-                  step === 2 ? `Embedding vectors (${progress}%)...` :
-                    step === 3 ? 'Storing vectors...' :
-                      'Ingestion Complete'}
-            </span>
-
-            {/* Progress bar track */}
-            <div style={styles.progressTrack}>
-              <div
-                style={{
-                  ...styles.progressFill,
-                  width: step === 4 ? '100%' : step === 2 ? `${progress}%` : step > 2 ? '100%' : '15%',
-                  background: step === 4
-                    ? 'linear-gradient(90deg, #818CF8, #38BDF8, #34D399, #A78BFA)'
-                    : 'var(--amber-accent)'
-                }}
-              />
-            </div>
-
-            {step === 4 ? (
-              <div style={styles.completeIcon}><Check size={12} /></div>
-            ) : (
-              <span style={styles.percentText} className="token-mono">
-                {step === 2 ? `${progress}%` : '...'}
-              </span>
-            )}
-          </div>
-        </div>
-      )}
     </div>
-  </div>
-);
+  );
 }
 
 const styles = {

@@ -1,18 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { UploadCloud, File, Check, RefreshCw } from 'lucide-react';
 
+
 export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
-  const [documents, setDocuments] = useState([]);
+
+  const [collections, setCollections] = useState([
+    {
+      id: "db",
+      name: "Uploaded Documents",
+      count: "0 docs",
+      updated: "Just now",
+      files: [],
+    },
+  ]);
   const [step, setStep] = useState(-1);
   const [progress, setProgress] = useState(0);
-  const [uploadingFilename, setUploadingFilename] = useState('');
+  const [uploadingFilename, setUploadingFilename] = useState("");
   const fileInputRef = useRef(null);
+
+
   const handleFileUpload = async (e) => {
     console.log("handleFileUpload fired");
 
     const file = e.target.files[0];
 
-    console.log("Selected file:", file);
+   
 
     if (!file) {
       console.log("No file selected");
@@ -34,9 +46,16 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
       console.log("Response status:", res.status);
 
       if (res.ok) {
+        await fetchDocuments();
+
         setProgress(100);
         setStep(4);
-      } else {
+
+        if (onUploadComplete) {
+          onUploadComplete(file.name);
+        }
+      }
+      else {
         console.error("Upload failed");
         setStep(-1);
       }
@@ -50,22 +69,42 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
     }
   };
   const fetchDocuments = async () => {
-  try {
-    const res = await fetch("http://127.0.0.1:8000/documents");
-    const data = await res.json();
+    try {
+    
 
-    setDocuments(data.documents);
-  } catch (err) {
-    console.error("Error fetching documents:", err);
-  }
-};
+      const res = await fetch("http://127.0.0.1:8000/documents");
 
+      console.log("Status:", res.status);
+
+      const data = await res.json();
+
+      
+
+      setCollections([
+        {
+          id: "db",
+          name: "Database Docs",
+          count: `${data.documents.length} docs`,
+          updated: "Just now",
+          files: data.documents,
+        },
+      ]);
+
+    
+    } catch (err) {
+      console.error("fetchDocuments error:", err);
+    }
+  };
   // Mobile viewport width listener
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    fetchDocuments();
   }, []);
 
   // Simulated stepper updates
@@ -107,22 +146,14 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
   }, [step]);
 
   const triggerUpload = () => {
-    console.log("triggerUpload called");
+  
     console.log(fileInputRef.current);
 
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
   };
-    const collections = [
-  {
-    id: "uploaded-documents",
-    name: "Uploaded Documents",
-    count: `${documents.length} docs`,
-    updated: "Live",
-    files: documents
-  }
-];
+
 
   return (
     <div style={{ ...styles.container, padding: isMobile ? '16px 16px 80px 16px' : '40px' }} className="custom-scrollbar">
@@ -179,7 +210,7 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
           style={{ display: 'none' }}
           onChange={handleFileUpload}
           accept=".pdf,.docx,.doc,.txt,.md"
-        />const collections =
+        />
 
         <div
           style={{ ...styles.uploadZone, padding: isMobile ? '24px' : '40px' }}

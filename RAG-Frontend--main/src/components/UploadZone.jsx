@@ -10,22 +10,22 @@ export default function UploadZone({ onUploadComplete, onCancel }) {
 
   const fileInputRef = useRef(null);
 
-  // Simulated processing timer
+ 
   useEffect(() => {
     if (step === -1) return;
 
     let timer;
     if (step === 0) {
-      // Step 0: Reading PDF
+      
       timer = setTimeout(() => setStep(1), 1800);
     } else if (step === 1) {
-      // Step 1: Chunking
+     
       timer = setTimeout(() => {
         setStep(2);
         setEmbeddingProgress(0);
       }, 1500);
     } else if (step === 2) {
-      // Step 2: Generating Embeddings with Progress bar
+      
       const interval = setInterval(() => {
         setEmbeddingProgress(prev => {
           if (prev >= 312) {
@@ -38,10 +38,10 @@ export default function UploadZone({ onUploadComplete, onCancel }) {
       }, 150);
       return () => clearInterval(interval);
     } else if (step === 3) {
-      // Step 3: Storing vectors
+     
       timer = setTimeout(() => setStep(4), 1500);
     } else if (step === 4) {
-      // Step 4: Ready! Call parent
+      
       timer = setTimeout(() => {
         onUploadComplete(file.name);
       }, 1200);
@@ -50,7 +50,7 @@ export default function UploadZone({ onUploadComplete, onCancel }) {
     return () => clearTimeout(timer);
   }, [step, file]);
 
-  // Handle countdown timer
+
   useEffect(() => {
     if (step >= 0 && step < 4) {
       const interval = setInterval(() => {
@@ -103,7 +103,7 @@ export default function UploadZone({ onUploadComplete, onCancel }) {
   return (
     <div style={styles.centerContainer}>
       {step === -1 ? (
-        /* SCREEN 4: IDLE UPLOAD ZONE */
+       
         <div 
           style={{
             ...styles.uploadZone,
@@ -168,11 +168,11 @@ export default function UploadZone({ onUploadComplete, onCancel }) {
             </button>
           </div>
 
-          {/* Stepper Timeline */}
+          
           <div style={styles.pipelineStepper}>
             <div style={styles.timelineLine}></div>
 
-            {/* Step 1: Reading */}
+            
             <div 
               style={{
                 ...styles.stepRow,
@@ -195,7 +195,7 @@ export default function UploadZone({ onUploadComplete, onCancel }) {
               </div>
             </div>
 
-            {/* Step 2: Chunking */}
+           
             <div 
               style={{
                 ...styles.stepRow,
@@ -218,7 +218,7 @@ export default function UploadZone({ onUploadComplete, onCancel }) {
               </div>
             </div>
 
-            {/* Step 3: Embeddings */}
+            
             <div 
               style={{
                 ...styles.stepRow,
@@ -254,7 +254,7 @@ export default function UploadZone({ onUploadComplete, onCancel }) {
               </div>
             </div>
 
-            {/* Step 4: Storing */}
+           
             <div 
               style={{
                 ...styles.stepRow,
@@ -277,7 +277,7 @@ export default function UploadZone({ onUploadComplete, onCancel }) {
               </div>
             </div>
 
-            {/* Step 5: Ready */}
+         
             <div 
               style={{
                 ...styles.stepRow,
@@ -301,7 +301,7 @@ export default function UploadZone({ onUploadComplete, onCancel }) {
             </div>
           </div>
 
-          {/* Footer countdown */}
+          
           <div style={styles.pipelineFooter}>
             {step < 4 ? (
               <>
