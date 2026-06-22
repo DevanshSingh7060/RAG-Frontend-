@@ -561,7 +561,7 @@ export default function MainChat({
                   <Paperclip size={14} style={{ color: 'var(--text-muted)', marginRight: '6px' }} />
                   <span>Attach</span>
                 </button>
-                <button style={styles.pillBtn} className="hover-color" onClick={onOpenModelPicker}>
+                <button style={styles.pillBtn} className="hover-color" onClick={onOpenUpload}>
                   <Sparkles size={14} style={{ color: 'var(--text-muted)', marginRight: '6px' }} />
                   <span>Knowledge</span>
                 </button>

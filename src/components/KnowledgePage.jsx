@@ -24,7 +24,7 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
 
     const file = e.target.files[0];
 
-   
+
 
     if (!file) {
       console.log("No file selected");
@@ -70,7 +70,7 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
   };
   const fetchDocuments = async () => {
     try {
-    
+
 
       const res = await fetch("http://127.0.0.1:8000/documents");
 
@@ -78,7 +78,7 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
 
       const data = await res.json();
 
-      
+
 
       setCollections([
         {
@@ -90,7 +90,7 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
         },
       ]);
 
-    
+
     } catch (err) {
       console.error("fetchDocuments error:", err);
     }
@@ -146,7 +146,7 @@ export default function KnowledgePage({ indexedDocsCount, onUploadComplete }) {
   }, [step]);
 
   const triggerUpload = () => {
-  
+
     console.log(fileInputRef.current);
 
     if (fileInputRef.current) {
